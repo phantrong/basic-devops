@@ -12,9 +12,10 @@ basic-app-devops/
 │   ├── db/init.sql     # Schema (chạy lần đầu khi tạo container MySQL)
 │   ├── Dockerfile
 │   └── .env.example
-├── frontend/           # Next.js (App Router) + Dockerfile
-│   └── app/page.js     # Giao diện guestbook
-└── docker-compose.yml  # chỉ MySQL
+├── frontend/                # Next.js (App Router) + Dockerfile
+│   └── app/page.js          # Giao diện guestbook
+├── docker-compose.yml       # DEV — chỉ MySQL
+└── docker-compose.prod.yml  # PROD — frontend + backend + db
 ```
 
 ## Chạy local
@@ -42,6 +43,30 @@ npm run dev        # http://localhost:3000
 
 Backend đọc cấu hình DB từ `.env` (mặc định trỏ tới `localhost:3309`), và tự
 tạo bảng `messages` khi khởi động (có retry chờ MySQL sẵn sàng).
+
+## Chạy cả 3 service cùng lúc (prod)
+
+Dùng `docker-compose.prod.yml` — dựng và chạy frontend + backend + db:
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+- Frontend: http://localhost:3000
+- Backend:  http://localhost:4000/api/health
+- DB chỉ truy cập nội bộ (không mở cổng ra host).
+
+Override cấu hình khi deploy thật (mật khẩu, URL API public):
+
+```bash
+cp .env.prod.example .env.prod          # rồi chỉnh DB_PASSWORD, NEXT_PUBLIC_API_URL...
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+```
+
+Tắt: `docker compose -f docker-compose.prod.yml down` (thêm `-v` để xoá dữ liệu).
+
+> `NEXT_PUBLIC_API_URL` được nướng vào lúc **build** frontend, nên khi đổi URL
+> backend phải build lại (`--build`).
 
 ## API
 
