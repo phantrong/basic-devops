@@ -49,7 +49,7 @@ export default function Home() {
 
   return (
     <main className="container">
-      <h1>📓 Guestbook</h1>
+      <h1>📓 Guestbook 3K TechOne</h1>
       <p className="subtitle">
         Next.js + Node.js + MySQL — bản demo siêu nhỏ để thử deploy.
       </p>
